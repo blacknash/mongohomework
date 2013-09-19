@@ -1,0 +1,15 @@
+
+// The task is find the min score for each student in a document, when the type of evaluation is homework
+// For that we can't use aggregate 
+
+var c=null; 
+
+var q = db.grades.find( {"type":"homework"} ).sort({"student_id":1,"score":1} );
+while(q.hasNext()){
+	e = q.next();
+	if(c != e.student_id)
+	{
+		c= e.student_id;
+		db.grades.remove(e);
+	}
+}
