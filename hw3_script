@@ -1,0 +1,32 @@
+# We need to delete the min score of type homework
+#{
+#	"_id" : 100,
+#	"name" : "Demarcus Audette",
+#	"scores" : [
+#		{
+#			"type" : "exam",
+#			"score" : 47.42608580155614
+#		},
+#		{
+#			"type" : "quiz",
+#			"score" : 44.83416623719906
+#		},
+#		{
+#			"type" : "homework",
+#			"score" : 39.01726616178844
+#		}
+#	]
+#}
+
+var cur = db.students.find();
+while(cur.hasNext()){ 
+	var obj =  cur.next();
+	var scoreArray =obj.scores; 
+	var min = 100;
+	for(i in scoreArray){ 
+		if(scoreArray[i].score < min){
+			min = scoreArray[i].score;
+		}
+	}  
+	db.students.update({'_id': obj._id} , {$pull : {'scores' : {'score' : min ,'type': 'homework' } } } );
+}
