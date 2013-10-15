@@ -1,0 +1,77 @@
+#Please calculate the average population of cities in California (abbreviation CA) and New York (NY) (taken together) with populations over 25,000. 
+#For this problem, assume that a city name that appears in more than one state represents two separate cities. 
+
+#Please round the answer to a whole number. 
+#Hint: The answer for CT and NJ is 49749.
+
+db.city.aggregate([
+	{$match:
+		{
+			"state" : {$in:["CA","NY"]}
+		}
+	},
+	{$group:
+		{
+			_id: {"state":"$state","city":"$city"},
+			pop : {$sum : "$pop"}
+		}
+	},
+	{$match:
+		{
+			pop :{$gt:25000}
+		}
+	},
+	{ $group :
+		{ 
+			_id : "",
+			avgCityPop : { $avg : "$pop" } 
+		} 
+	}
+])
+
+#5.3
+db.grades.aggregate([
+	{$unwind:"$scores"},
+	{$match:
+		{
+			"scores.type" : {$in:["exam","homework"]}
+		}
+	},
+	{ $group :
+		{ 
+			_id : {"student_id" : "$student_id","class_id":"$class_id"},
+			avgScore : { $avg : "$scores.score" } 
+		} 
+	},
+	{$project:
+		{
+			_id : 0,
+			s : "$_id.student_id",
+			c : "$_id.class_id",
+			a : "$avgScore"
+		}
+	},
+	{$group:
+		{
+			_id : {"class" : "$c"},
+			avg : {$avg:"$a"}
+		}
+	},
+	{$sort:{avg:1}}
+])
+
+
+
+db.city.aggregate([
+	{$match:
+		{
+			"city" : {$regex: /^(\d)/}
+		}
+	},
+	{$group:
+		{
+			_id: "",
+			pop : {$sum : "$pop"}
+		}
+	}
+])
